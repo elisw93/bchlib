@@ -27,6 +27,19 @@ impl BCH {
         };
         err
     }
+
+    pub fn encode(&mut self, msg: &[u8]) -> u8 {
+        unsafe {
+            let mut result = 0u8;
+            ffi::encode_bch(
+                &mut self.0,
+                msg.as_ptr(),
+                msg.len() as u32,
+                ptr::addr_of_mut!(result),
+            );
+            result
+        }
+    }
 }
 
 #[cfg(test)]
