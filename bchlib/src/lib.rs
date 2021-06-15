@@ -15,21 +15,19 @@ impl BCH {
             let bch = ffi::init_bch(m, t, poly);
             if bch == ptr::null_mut() {
                 Err("Invalid BCH params")
-            }
-            else {
+            } else {
                 Ok(BCH(*bch))
             }
         }
     }
 
-    pub fn decode(&mut self, msg: &[u8], ecc: &[u8], errloc: &mut[u32]) -> i32 {
+    pub fn decode(&mut self, msg: &[u8], ecc: &[u8], errloc: &mut [u32]) -> i32 {
         let err = unsafe {
             ffi::decodebits_bch(&mut self.0, msg.as_ptr(), ecc.as_ptr(), errloc.as_mut_ptr())
         };
         err
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -38,7 +36,9 @@ mod tests {
     #[test]
     fn test_decode() {
         let mut bch = BCH::init(5, 2).unwrap();
-        let msg: [u8; 21] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let msg: [u8; 21] = [
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ];
         let ecc: [u8; 10] = [1, 1, 1, 0, 1, 1, 0, 1, 0, 0];
         let mut errloc: [u32; 2] = [0, 0];
         bch.decode(&msg, &ecc, &mut errloc);
@@ -49,7 +49,9 @@ mod tests {
     #[test]
     fn test_decode_err() {
         let mut bch = BCH::init(5, 2).unwrap();
-        let msg: [u8; 21] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let msg: [u8; 21] = [
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        ];
         let ecc: [u8; 10] = [1, 1, 1, 0, 1, 1, 0, 1, 0, 0];
         let mut errloc: [u32; 2] = [0, 0];
         bch.decode(&msg, &ecc, &mut errloc);
@@ -60,7 +62,9 @@ mod tests {
     #[test]
     fn test_sync_codeword() {
         let mut bch = BCH::init(5, 2).unwrap();
-        let msg: [u8; 21] = [0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0];
+        let msg: [u8; 21] = [
+            0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+        ];
         let ecc: [u8; 10] = [1, 0, 1, 1, 1, 0, 1, 1, 0, 0];
         let mut errloc: [u32; 2] = [0, 0];
         bch.decode(&msg, &ecc, &mut errloc);
